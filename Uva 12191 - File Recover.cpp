@@ -1,3 +1,19 @@
+/*
+Think about this aaaa string , how much unique duplicate substrings can be here 
+This will be like in suffix array in serially 
+
+lcp[i] = 1 = a
+lcp[i] = 2 = aa
+lcp[i] = 3 =aaa
+lcp[i] =-1 =aaaa
+
+Initial res=0;
+Initial base =0;
+Here , when aa that means it can produce two substrings which can occur next substring so keep it at base ,base=2(lcp[i]),res+=(lcp[i]-base)
+and iterate the next lcp, so for aaa now lcp[i] is 3 that means this three a,aa,aaa substrings will occur more than one take 
+this three !! No , think here a,aa substring has been already occured , our base is two so here new substring occuring more than one is 
+only one (aaa) so now add lcp[i]-base =1. and now base=lcp[i] (3) ,so total res is 2+1 = 3 total three unique substrings which has occured more than one 
+*/
 #include <bits/stdc++.h>
 
 using namespace std;
