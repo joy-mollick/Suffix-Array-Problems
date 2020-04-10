@@ -100,13 +100,15 @@ void suffix_array_construct(int down,int up)
 
     lcp=lcp_construct(suffixarray,n);
     ans=0;
-    for(int i=0;i<n;i++)
+    int exact=n-1;/// one size is decreased because of #
+    for(int i=1;i<n;i++)
     {
-        int lngth_of_ith_suffx=n-suffixes[i].index;
+        int lngth_of_ith_suffx=exact-suffixes[i].index;
         lngth_of_ith_suffx=min(up,lngth_of_ith_suffx);/// mx_lngth can't cross up
         int lngth_will_be_reduce=down-1;/// that means we will throw all substring with length down-1
-        lngth_will_be_reduce=max(lngth_will_be_reduce,lcp[i]);
+        lngth_will_be_reduce=max(lngth_will_be_reduce,lcp[i-1]);
         int exact_length=lngth_of_ith_suffx-lngth_will_be_reduce;
+        ///cout<<lngth_of_ith_suffx<<" "<<lngth_will_be_reduce<<" "<<suffixes[i].index<<endl;
         exact_length=max(exact_length,0);
         ans=ans+exact_length;
     }
@@ -118,16 +120,16 @@ int main()
 {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    ///cout.tie(NULL);
+    cout.tie(NULL);
     int tc;
     cin>>tc;
     while(tc--){
     int m,k;
     cin>>m>>k;
     cin>>s;
-    ///s=s+"$";
+    s=s+"#";
     suffix_array_construct(k,k);
-    cout<<(ans)<<'\n';
+    cout<<(ans)<<endl;
     }
     return 0;
 }
