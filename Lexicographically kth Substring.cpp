@@ -1,21 +1,22 @@
 #include <bits/stdc++.h>
- 
+
 using namespace std;
- 
+
 /// suffix array build an array and sort suffixes according lexicographically and keep its starting index in logn.nlogn`=n(logn)^2
- 
- 
-const int mx= 90001;
+
+
+const int mx= 100005;
  vector<int>lcp(mx,0);
- 
+ int suffixarray[mx];
+
  string s;
- 
+
 struct suffix
 {
     int index;
     int rank[2];
 };
- 
+
 bool comp(struct suffix a,struct suffix b)
 {
     if(a.rank[0]==b.rank[0])
@@ -24,14 +25,14 @@ bool comp(struct suffix a,struct suffix b)
     }
     return (a.rank[0]<b.rank[0]);
 }
- 
-void lcp_construct(int suffixarray[],int n)
+
+void lcp_construct(int n)
 {
     ///vector<int>lcp(n,0);
     vector<int>inv_suffixarray(n,0);
     int pref=0;
     for(int i=0;i<n;i++) inv_suffixarray[suffixarray[i]]=i;/// get sorting index of suffixarray
- 
+
     for(int i=0;i<n;i++)
     {
         int pos_in_suffixarray=inv_suffixarray[i];
@@ -45,16 +46,16 @@ void lcp_construct(int suffixarray[],int n)
         /// next_pos is next suffix's current position in string s
         while(i+pref<n && next_pos+pref<n && s[i+pref]==s[next_pos+pref])
             pref++;
- 
+
         lcp[pos_in_suffixarray]=pref;
- 
+
         if(pref>0) pref--;/// obviously next pref will be at least pref-1
     }
- 
+
     /// lcp array
 }
- 
-int *suffix_array_construct()
+
+void suffix_array_construct()
 {
     int n=s.length();
     struct suffix suffixes[n];
@@ -72,7 +73,7 @@ int *suffix_array_construct()
         int prev_rank=suffixes[0].rank[0];/// It alltime keep rank of previous which will be compared with current rank
         suffixes[0].rank[0]=rank;
         ind[suffixes[0].index]=0;/// It will be used to get the rank of suffix start with ith index for assigning next rank
- 
+
         for(int i=1;i<n;i++)
         {
             if(suffixes[i].rank[0]==prev_rank && suffixes[i].rank[1]==suffixes[i-1].rank[1])/// Here rank is changed,rank is updated
@@ -83,8 +84,7 @@ int *suffix_array_construct()
             else
             {
                 prev_rank=suffixes[i].rank[0];
-                suffixes[i].rank[0]=rank+1;
-                rank++;
+                suffixes[i].rank[0]=++rank;
             }
             ind[suffixes[i].index]=i;
         }
@@ -97,17 +97,16 @@ int *suffix_array_construct()
         }
         sort(suffixes,suffixes+n,comp);
     }
- 
-    int *suffixarray = new int[n];
+
     for(int i=0;i<n;i++) {suffixarray[i]=suffixes[i].index;}
- 
-        lcp_construct(suffixarray,n);
-        return suffixarray;
+
+        lcp_construct(n);
+
 }
- 
- 
+
+
 int main()
- 
+
 {
      //ios_base::sync_with_stdio(false);
     //cin.tie(NULL);
@@ -119,7 +118,7 @@ int main()
     s=S+"$";
     int len=s.length();/// one is for extra to keep 1 based indexing
     long long exact=S.length();
-    int *arr=suffix_array_construct();
+    suffix_array_construct();
     cin>>q;
     while(q--)
     {
@@ -130,16 +129,16 @@ int main()
         long long nmbr_of_dstnct_sbstrng;
         for(int i=1;i<len;i++)
         {
-            nmbr_of_dstnct_sbstrng=exact-(long long)arr[i]-(long long)lcp[i];
+            nmbr_of_dstnct_sbstrng=exact-(long long)suffixarray[i]-(long long)lcp[i-1];
             if(nmbr_of_dstnct_sbstrng+tot<k) {tot=nmbr_of_dstnct_sbstrng+tot;}
             else
             {
                 long long diff=nmbr_of_dstnct_sbstrng+tot-k;
-                length=lcp[i]+nmbr_of_dstnct_sbstrng-diff;
-                start_pos=arr[i];
+                length=(long long)lcp[i-1]+nmbr_of_dstnct_sbstrng-diff;
+                start_pos=(long long)suffixarray[i];
                 break;
             }
         }
-        cout<<S.substr(start_pos,length)<<endl;
+        printf("%s\n",S.substr(start_pos,length).c_str());
     }
 }
